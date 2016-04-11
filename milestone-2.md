@@ -45,7 +45,7 @@ var ProjectSchema = new mongoose.Schema({
   creator: String
 });
 
-mongoose.model('Project', ProjectSchema);
+module.exports = mongoose.model('Project', ProjectSchema);
 ```
 
 Let's quick step through the code, because we'll be using `mongoose` in the file we need to `require` it.  Next we create a new Mongoose Schema object, this is our data model in which we tell Mongoose what fields are part of the model as well as their data types.  For the project model, we've defined two text fields, `name` and `description`.  We've also defined an `upvotes` field which is a Number and we want it to default to `0` and a `comments` field which looks a little weird but basically we are telling Mongoose that this field is actually a collection of references to another data model, Comment.  This will give us some special methods that will allow us to populate the comments automagically.  And lastly a `creator` field which is currently a string, but we'll update this later on in the course to use a `User` model.
@@ -72,7 +72,7 @@ var CommentSchema = new mongoose.Schema({
   creator: String
 });
 
-mongoose.model('Comment', CommentSchema);
+module.exports = mongoose.model('Comment', CommentSchema);
 ```
 
 This schema looks pretty similar to the `ProjectSchema`, we define various fields and their data types.  Note that we are defining the other side of the relationship between a Project and Comment with the `project` field which is a reference to the project it was created under.
