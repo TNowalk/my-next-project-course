@@ -18,7 +18,7 @@ exports.index = function(req, res) {
 };
 ```
 
-We're creating a simple controller here which exports a single method that will be used by the routes we'll set up in just a bit.  We import the project model which will be used to interact with the database.  The method is called `index` and is used to retrieve all of the projects in the database.  Using `Product`, which is the model (A mongoose schema model o be exact), we call `.find` which will return all objects in the project collection.  We check for an error, which would be in `err`, if there was an error we respond with a `500` status code.  Otherwise, we return a `200` status code and a JSON payload with the array of projects.
+We're creating a simple controller here which exports a single method that will be used by the routes we'll set up in just a bit.  We import the project model which will be used to interact with the database.  The method is called `index` and is used to retrieve all of the projects in the database.  Using `Product`, which is the model (A mongoose schema model to be exact), we call `.find` which will return all objects in the project collection.  We check for an error, which would be in `err`, if there was an error we respond with a `500` status code.  Otherwise, we return a `200` status code and a JSON payload with the array of projects.
 
 ### Routing Requests
 
@@ -76,7 +76,7 @@ exports.create = function(req, res) {
 };
 ```
 
-This will create a new method called `create`, inside it we use the mongoose model `.create` method to add the project to the database.  If an error is encountered, we respond with a `500` status code, otherwise we respond with `201` and a JSON payload of the new project.  For more information what the difference between 500, 200, and 201 status codes are, head over to the [W3 Status Code Definitions](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html).
+This will create a new method called `create`, inside it we use the mongoose model `.create` method to add the project to the database.  If an error is encountered, we respond with a `500` status code, otherwise we respond with `201` and a JSON payload of the new project.  For more information on the difference between 500, 200, and 201 status codes are, head over to the [W3 Status Code Definitions](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html).
 
 Now that we have a new method to use, let's wire it up to a specific route.  Open `api/project/index.js` and after the line where you defined the `router.get('/', ...)`, add this line:
 
@@ -84,7 +84,9 @@ Now that we have a new method to use, let's wire it up to a specific route.  Ope
 router.post('/', controller.create);
 ```
 
-Now when a POST request is sent to `/api/project/`, the `controller.create` method will be called.  Let's test it out, restart your server and type the following in a new terminal tab/window (Make sure you substitute PROJECT_NAME, PROJECT_DESCRIPTION, and PROJECT_CREATOR with your own text):
+Now when a POST request is sent to `/api/project/`, the `controller.create` method will be called.  Let's test it out, restart your server and type the following in a new terminal tab/window:
+
+> Make sure you substitute PROJECT_NAME, PROJECT_DESCRIPTION, and PROJECT_CREATOR with your own text
 
 ```
 curl --data 'name=PROJECT_NAME&description=PROJECT_DESCRIPTION&creator=PROJECT_CREATOR' http://localhost:3000/api/projects
@@ -97,7 +99,6 @@ curl http://localhost:3000/api/projects
 ```
 
 ```
-/* Example Response */
 [
   {
     "_id": "570bf5e1917b3688621e18f1",
@@ -111,11 +112,11 @@ curl http://localhost:3000/api/projects
 ]
 ```
 
-Take a quick moment to look at the `_id` field.  This wasn't anything you modeled in the schema, this is a primary identifier that Mongo adds to every single object that is created.  Each `_id` is unique across the entire database and it's how we look up various objects.  In future examples, I'll be performing cURL calls using `_id` values, you will have to substitute the value with an `_id` in your own collection otherwise you'll end up with 404 errors.
+> Take a quick moment to look at the `_id` field.  This wasn't anything you modeled in the schema, this is a primary identifier that Mongo adds to every single object that is created.  Each `_id` is unique across the entire database and it's how we look up various objects.  In future examples, I'll be performing cURL calls using `_id` values, you will have to substitute the value with an `_id` in your own collection otherwise you'll end up with 404 errors.
 
-For the rest of the routes/methods that we'll be creating, we're going to be using route parameters.  Essentially, we'll be passing some sort of ID into the URL which will be stored in a route parameter which we can use to look the object up in the database.  Instead of constantly having to rewrite the same code to look up the route parameter for each method, we can write what's called middleware.  As the name implies, middleware sits in between the route and the method that gets executed.  So, when a GET request comes in to `/api/projects` we can pass that request through the middleware which will pre-populate the request with the project if necessary, this then get's passed to `controller.index` to be processed and send back a response.
+For the rest of the routes/methods that we'll be creating, we're going to be using route parameters.  Essentially, we'll be passing some sort of ID into the URL which will be stored in a route parameter that we can use to look the object up in the database.  Instead of constantly having to rewrite the same code to look up the route parameter for each method, we can write what's called middleware.  As the name implies, middleware sits in between the route and the method that gets executed.  So, when a GET request comes in to `/api/projects` we can pass that request through the middleware which will pre-populate the request with the project if necessary, this then get's passed to `controller.index` to be processed and send back a response.
 
-Open up `api/project/project.controller.js` and before you define `exports.index`, add the following:
+Open up `api/project/project.controller.js` and before the line where you define the `exports.index` method, add the following:
 
 ```
 // Populate a project from a route parameter
@@ -135,14 +136,16 @@ exports.populate = function(req, res, next, id) {
 
 This creates a method called `populate` which will be the middleware that will populate a project from an ID in the route parameter.  It uses `.findById` to lookup an object by the ID and `.exec` will execute the query.  If there is an error, we call `next` which advances the request to the next step (most likely the controller method).  If we couldn't find the project, we call `next` with an error indicating so.  And finally, if we found the project we populate `req.project` with the project object so it will be available to our controller methods.
 
-To use the middleware, we need to open up `api/project/index.js` and before `router.get('/', controller.index);` add the following:
+To use the middleware, we need to edit `api/project/index.js` and before the line with `router.get('/', controller.index);` add the following:
 
 ```
 // Project Middleware
 router.param('project', controller.populate);
 ```
 
-Now, whenever we define a route that has `:project` in it the middleware will automatically populate the object for us.  Alright, so there are a couple more routes to make.  We can get a list of projects and create a new project, but we need a way to look at a single project.  Open up `api/project/project.controller.js` and add the following method to the end of the file:
+Now, whenever we define a route that has `:project` in it the middleware will automatically populate the object for us.  
+
+Alright, so there are a couple more routes to make.  We can get a list of projects and create a new project, but we need a way to look at a single project.  Open up `api/project/project.controller.js` and add the following method to the end of the file:
 
 ```
 // Retrieve a single project
@@ -151,20 +154,21 @@ exports.get = function(req, res) {
 };
 ```
 
-A simple little method, thanks to the middleware we can be sure that `req.project` will have the project object in it so we can simply respond with that.  Let's wire up the route, open `api/project/index.js` and after `router.post('/', controller.create);` add this:
+A simple little method, thanks to the middleware we know that `req.project` will have the project object in it so we can simply respond with that.  Let's wire up the route, open `api/project/index.js` and after the line with `router.post('/', controller.create);` add this:
 
 ```
 router.get('/:project', controller.get);
 ```
 
-Restart your server and type this in to the terminal:
+Restart your server (`Cmd + C` or `Ctrl + C`, then `npm start`) and type this in to the terminal:
+
+> Remember to replace `570bf5e1917b3688621e18f1` with the ID that is in your database
 
 ```
 curl http://localhost:3000/api/projects/570bf5e1917b3688621e18f1
 ```
 
 ```
-/* Example Response */
 {
   "_id": "570bf5e1917b3688621e18f1",
   "name": "Bunk Beds",
@@ -175,8 +179,6 @@ curl http://localhost:3000/api/projects/570bf5e1917b3688621e18f1
   "upvotes": 0
 }
 ```
-
-> Remember to replace `570bf5e1917b3688621e18f1` with the ID that is in your database, otherwise you'll end up getting a 404 error
 
 ### Leveraging Schema methods
 
@@ -189,7 +191,7 @@ ProjectSchema.methods.upvote = function(cb) {
 };
 ```
 
-Simple enough, we're adding an `upvote` method to the `ProjectSchema.methods`.  It takes a single argument, `cb` which is short for `callback`.  For more info on what a callback is, check out [This Post](http://javascriptissexy.com/understand-javascript-callback-functions-and-use-them/).  Inside the method, we increment `upvotes` and then call the core `save` method, passing in the `cb` function.  That's it, now we can create a controller method that uses this new schema method.  Navigate over to `api/project/project.controller.js` and add this to the end of the file:
+Simple enough, we're adding an `upvote` method to the `ProjectSchema.methods`.  It takes a single argument, `cb` which is short for `callback`.  For more info on what a callback is, check out [this post](http://javascriptissexy.com/understand-javascript-callback-functions-and-use-them/).  Inside the method, we increment `upvotes` and then call the core `save` method, passing in the `cb` function.  That's it, now we can create a controller method that uses this new schema method.  Navigate over to `api/project/project.controller.js` and add this to the end of the file:
 
 ```
 // Add an upvote a project
@@ -201,7 +203,9 @@ exports.upvote = function(req, res) {
 };
 ```
 
-Once again, thanks to the middleware `req.project` is pre-populated so we can immediately call the new `upvote` method, we're passing in an anonymous function which is what gets stored in `cb`.  When the `save` is complete, we either respond with an error or the updated JSON object for the project.  Ok, you should start seeing a pattern here.  We create a controller method, then it's time to wire it to a route.  So open up `api/project/index.js` and add this new route:
+Once again, thanks to the middleware `req.project` is pre-populated so we can immediately call the new `upvote` method, we're passing in an anonymous function which is what gets stored in `cb`.  When the `save` is complete, we either respond with an error or the updated JSON object for the project.  
+
+Ok, you should start seeing a pattern here.  We create a controller method, then we need to associate it to with route.  So open up `api/project/index.js` and add this new route:
 
 ```
 router.put('/:project/upvote', controller.upvote);
@@ -218,7 +222,6 @@ curl -X PUT http://localhost:3000/api/projects/570bf5e1917b3688621e18f1/upvote
 ```
 
 ```
-/* Example Response */
 {
   "_id": "570bf5e1917b3688621e18f1",
   "name": "Bunk Beds",
@@ -275,7 +278,6 @@ curl --data 'text=I really like this project idea!&creator=Kelly' http://localho
 ```
 
 ```
-/* Example Response */
 {
   "__v": 0,
   "text": "I really like this project idea!",
@@ -318,13 +320,13 @@ exports.populate = function(req, res, next, id) {
 };
 ```
 
-This is nearly identical to the project middleware, the only difference being that we're using the Comment model and the variables say `comment` instead of `project`.  Now that we've go the middleware, let's wire it up to the route param.  Open `api/project/index.js`, on the line after you import the project controller add this:
+This is nearly identical to the project middleware, the only difference being that we're using the Comment model and the variables say `comment` instead of `project`.  Now that we've got the middleware, let's wire it up to the route param.  Open `api/project/index.js`, on the line after you import the project controller add this:
 
 ```
 var comment = require('../comment/comment.controller');
 ```
 
-And, on the line after you add the project middle ware add this:
+And, on the line after you added the project middleware add this:
 
 ```
 // Comment Middleware
@@ -381,7 +383,6 @@ curl -X PUT http://localhost:3000/api/comments/570c0bc0e248b30967daf981/upvote
 ```
 
 ```
-/* Example Response */
 {
   "_id": "570c0bc0e248b30967daf981",
   "text": "I really like this project idea!",
@@ -401,7 +402,6 @@ curl http://localhost:3000/api/projects/570bf5e1917b3688621e18f1
 ```
 
 ```
-/* Example Response */
 {
   "_id": "570bf5e1917b3688621e18f1",
   "name": "Bunk Beds",
@@ -415,7 +415,7 @@ curl http://localhost:3000/api/projects/570bf5e1917b3688621e18f1
 }
 ```
 
-Notice how the `comments` is just an array, in this case with a single comment ID in it.  That's not very helpful, that would mean we'd have to make a second call to look up those comments and map them to their IDs.  Luckily, Mongoose gives us the ability to automatically expand those objects.  To do this, we'll need to update the project controller's `get` method, so open up `api/project/project.controller.js` and update the `get` method to look like this:
+Notice how the `comments` is an array, in this case with a single comment ID in it.  That's not very helpful, that would mean we'd have to make a second call to look up those comments and map them to their IDs.  Luckily, Mongoose gives us the ability to automatically expand those objects.  To do this, we'll need to update the project controller's `get` method, so open up `api/project/project.controller.js` and update the `get` method to look like this:
 
 ```
 // Retrieve a single project
@@ -450,7 +450,7 @@ Now, you're using the `populate` function which takes two arguments.  The first 
 }
 ```
 
-Not that we don't do this when looking up all the projects, this would probably cause a performance hit when pulling down larger datasets.  The `populate` method would be more idea for looking up single entities.  
+> Note that we don't do this when looking up all the projects (`/api/projects/`).  Doing so would most likely cause a performance hit when pulling down larger datasets.  The `populate` method would be more ideal for looking up single entities.
 
 ### Conclusion
 
