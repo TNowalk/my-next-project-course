@@ -101,3 +101,5 @@ origin	https://github.com/GITHUB_USERNAME/REPO_NAME.git (push)
 ```
 
 Once you have your remote set up, you can `add`, `commit`, and `push` your changes up to GitHub.  On your  initial push, you will probably have to set up your upstream with `git push --set-upstream origin master`.  After that, you'll be able to use `git push`.
+
+> See example code for this milestone in this [branch](https://github.com/TNowalk/my-next-project/tree/milestone-1)

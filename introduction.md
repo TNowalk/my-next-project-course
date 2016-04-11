@@ -9,7 +9,7 @@ Let's start off with defining what a stack is.  In our industry, the stack, or s
 There are four main technologies that make up the MEAN stack:
 
 * [MongoDB](https://www.mongodb.org/) - An open source data store which uses a "Document Oriented Design".  Unlike relational databases where you store data in tables, columns, and rows, you essentially store JSON objects.  If you've used JavaScript, then you've likely encountered JSON objects which makes using MongoDB familiar.
-* [ExpressJS](http://expressjs.com/) - A framework that sits "on top" of NodeJS which provides you with an MVC architecture.  With ExpressJS, a lot of the grunt work is abstracted away from you and gives you easy ways to manage routes, requests, and serving views (among other things).
+* [ExpressJS](http://expressjs.com/) - A framework that sits "on top" of NodeJS which provides you with an [MVC architecture](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller).  With ExpressJS, a lot of the grunt work is abstracted away from you and gives you easy ways to manage routes, requests, and serving views (among other things).
 * [AngularJS](https://angularjs.org/) - A client side JavaScript framework which simplifies the development of advanced, dynamic applications.  Popular for it's data-binding and MVC structure.
 * [NodeJS](https://nodejs.org/en/) - An open source server side runtime environment that is built on the shoulders of Google Chrome's V8 engine.
 
