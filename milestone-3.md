@@ -54,7 +54,7 @@ This is where we tell the app that any time it sees the URL `/api/projects` it's
 
 ### Testing the Route
 
-If all went well, you should be able to fire up your server with `npm start`.  Now it's time to do a quick test, you have a couple of options here.  You can test your routes from your terminal using cURL calls or if you prefer a more graphical approach you can check out [Postman](https://www.getpostman.com/).  For this course, the examples will be run from the terminal.  With your app running, open up a new tab or window in your terminal and type the following:
+If all went well, you should be able to fire up your server (if it's not already running) with `nodemon npm start`.  Now it's time to do a quick test, you have a couple of options here.  You can test your routes from your terminal using cURL calls or if you prefer a more graphical approach you can check out [Postman](https://www.getpostman.com/).  For this course, the examples will be run from the terminal.  With your app running, open up a new tab or window in your terminal and type the following:
 
 ```
 curl http://localhost:3000/api/projects
@@ -84,7 +84,7 @@ Now that we have a new method to use, let's wire it up to a specific route.  Ope
 router.post('/', controller.create);
 ```
 
-Now when a POST request is sent to `/api/project/`, the `controller.create` method will be called.  Let's test it out, restart your server and type the following in a new terminal tab/window:
+Now when a POST request is sent to `/api/project/`, the `controller.create` method will be called.  Let's test it out, type the following in a new terminal tab/window:
 
 > Make sure you substitute PROJECT_NAME, PROJECT_DESCRIPTION, and PROJECT_CREATOR with your own text
 
@@ -160,13 +160,13 @@ A simple little method, thanks to the middleware we know that `req.project` will
 router.get('/:project', controller.get);
 ```
 
-Restart your server (`Cmd + C` or `Ctrl + C`, then `npm start`) and type this in to the terminal:
-
-> Remember to replace `570bf5e1917b3688621e18f1` with the ID that is in your database
+If you are not using `nodemon`, then after every change to a server side file you'll have to manaully restart your server.  To restart your server hit `Cmd + C` or `Ctrl + C`, then `npm start`.  I strongly suggest using `nodemon` as explained in [Milestone 2](./milestone-2.md) by typing `nodemon npm start`.  In a new tab/window, type this in to the terminal:
 
 ```
 curl http://localhost:3000/api/projects/570bf5e1917b3688621e18f1
 ```
+
+> Remember to replace `570bf5e1917b3688621e18f1` with the ID that is in your database
 
 ```
 {
@@ -215,7 +215,7 @@ For semantic reasons, we're using a PUT request because we are putting a new val
 
 > For more info on when to use what types of requests, head over to the [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).  
 
-To test this, restart your server and send this cURL request:
+To test this, send this cURL request:
 
 ```
 curl -X PUT http://localhost:3000/api/projects/570bf5e1917b3688621e18f1/upvote
@@ -271,7 +271,7 @@ Once more, we need to create a route.  In `api/project/index.js`, add the follow
 router.post('/:project/comments', controller.createComment);
 ```
 
-Restart your server and test out the new route:
+Test out the new route:
 
 ```
 curl --data 'text=I really like this project idea!&creator=Kelly' http://localhost:3000/api/projects/570bf5e1917b3688621e18f1/comments
@@ -376,7 +376,7 @@ And last but not least, we need to tell our app how to use our new routes.  Open
 app.use('/api/comments', require('./api/comment'));
 ```
 
-Phew!  That was a lot, let's cross our fingers and restart the server.  As long as we didn't screw something up along the way, your server should be running and we can test our last route with this cURL call:
+Phew!  That was a lot, let's cross our fingers and see what we broke.  As long as we didn't screw something up along the way, your server should still be running and we can test our last route with this cURL call:
 
 ```
 curl -X PUT http://localhost:3000/api/comments/570c0bc0e248b30967daf981/upvote

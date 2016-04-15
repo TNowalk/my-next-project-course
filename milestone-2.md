@@ -16,6 +16,20 @@ mongoose.connect('mongodb://localhost/my-next-project');
 
 Our app is now requiring the `mongoose` module and attempts to connect to a local MongoDB instance in a database called `my-next-project`.  If you try to run `npm start` at this point, you'll probably experience an `ECONNREFUSED` error.  That's because you haven't started your MongoDB, so your app fails to connect to it.  To run MongoDB, open a new tab in your terminal and type `mongod`.  Now that your database is running, you should be able to run `npm start` without error.  You won't notice a difference in the output, but rest assured you're now connected to your database.  You can confirm by going to your tab that you ran `mongod` in and you'll notice a new connection in the logging output.  If you stop your server, you'll see the connection end as well.
 
+### Automate with nodemon
+
+When you run `npm start`, it pulls in all of your files one time.  That means that if you change any of your server side files after you've started your server, those changes won't be "seen" as NodeJS will not reopen that file.  So after any change, you would have to kill your server and restart it to see the new changes.  This is a pain, and can lead to some frustrating troubleshooting when you forget to restart the server and you can't figure out why your changes aren't showing up.  To help with this, we're going to use a tool perfect for developing node servers.  The tool is called [nodemon](https://github.com/remy/nodemon), it will watch all the files in your directory and if there are any changes it will automatically restart your application for you.  
+
+So let's install `nodemon` with the following command:
+
+```
+npm install -g nodemon
+```
+
+> Note: Depending on your permissions, you may have to run the command as sudo: `sudo npm install -g nodemon`
+
+This will install `nodemon` globally, to confirm the installation you can type `nodemon -v` and you should see a version number like `1.9.1`.  Now all you have to do when you want to start your server is type `nodemon npm start`.  It's the same command as before, but now we've preceeded `npm start` with `nodemon`.  Now your server will run and as you edit files it will gracefully restart your server so you don't have to remember to do it manually.
+
 ### Our First Model - Projects
 
 Now that we have a functioning connection to our database, it's time to think about our data models.  Let's think about what our app is going to do.  The goal is to display projects and allow users to comment on them, which means we'll need to model and store the projects and comments.  
