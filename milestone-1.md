@@ -63,7 +63,7 @@ npm install --save mongoose
 To test to make sure that everything is working, let's fire up your shiney new server.
 
 ```
-npm starting
+npm start
 ```
 
 With the default settings, you should now be serving your app at <http://localhost:3000>.  If all is working, you should see a "Welcome to Express" message.
